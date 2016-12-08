@@ -1,15 +1,17 @@
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 
 public interface AllObjects   {
     
+    // constants
     public final int GRID_SIZE = 25;
     public final int UPDATE_RATE = 60;
     
-    public class GameTile
+    public class GameTile implements Serializable
     {
         String name;
         ArrayList<Player> players;
@@ -49,7 +51,7 @@ public interface AllObjects   {
 
     }
     
-    public class Item 
+    public class Item  implements Serializable
     {
         public String type;
         public int durability;
@@ -63,7 +65,7 @@ public interface AllObjects   {
         }
     }
     
-    public class Player
+    public class Player implements Serializable
     {
         public boolean allowedToMove;
         public String name;
@@ -78,7 +80,9 @@ public interface AllObjects   {
         public int agi;
         public int str;
         public int intel;
-      
+        public int lastX;
+        public int lastY;
+        
         public Player(String name)
         {
             this.name = name;
@@ -94,6 +98,8 @@ public interface AllObjects   {
             agi = rollDice(3,6);
             str = rollDice(3,6);
             intel = rollDice(3,6);
+            lastX = -1;
+            lastY = -1;
         }
         
         public void setAttrs(String team, String type)

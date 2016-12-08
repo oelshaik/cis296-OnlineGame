@@ -184,6 +184,7 @@ public class GameServer extends Application implements  AllObjects {
     
     public void handleInput(ArrayList input)
     {
+        System.out.println("INPUT : "  + (String)input.get(0) );
         if(((String)input.get(0)).equals("register"))
         {
             String team = (String)input.get(1);
@@ -206,6 +207,7 @@ public class GameServer extends Application implements  AllObjects {
         try
         {
             ArrayList message;
+            ArrayList inMessage;
             toPlayer = new ObjectOutputStream(playerSocket.getOutputStream());
             fromPlayer = new ObjectInputStream(playerSocket.getInputStream());
             String name = (String)fromPlayer.readObject(); // blocking poll waiting for name
@@ -225,6 +227,7 @@ public class GameServer extends Application implements  AllObjects {
            
             while(true)
             {
+                
                 if(sendUpdate)
                 {
                     message = new ArrayList();
@@ -234,13 +237,13 @@ public class GameServer extends Application implements  AllObjects {
                     toPlayer.writeObject(message);
                     sendUpdate = false;
                 }
-                if(fromPlayer.available() > 0) // pending message from client
+                
+                if((inMessage = (ArrayList)fromPlayer.readObject()) != null) // pending message from client
                 {
-                    //message = new ArrayList();
-                    message = (ArrayList)fromPlayer.readObject();
-                    message.add(0,allPlayers.get(indexOfPlayer).name);
+                    System.out.println("received message from client");
+                    //message = (ArrayList)fromPlayer.readObject();
                     threadLock.acquire(1);
-                    handleInput(message);
+                    handleInput(inMessage);
                     threadLock.release(1);
                 }
                 
@@ -256,6 +259,8 @@ public class GameServer extends Application implements  AllObjects {
                     message.add("nextUpdate");
                     message.add(secondsLeft);
                     toPlayer.writeObject(message);
+                    
+                    //System.out.println(message.get(0));
                 }
                 Thread.sleep(500); // tick rate
             }
@@ -263,7 +268,7 @@ public class GameServer extends Application implements  AllObjects {
         catch(Exception i)
         {
             //i.printStackTrace();
-            System.out.println("Client disconnected");
+            System.out.println("EXCEPTION : Client disconnected");
         }
     }
   }
